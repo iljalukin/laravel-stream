@@ -37,7 +37,7 @@ class ConvertVideoForStreaming implements ShouldQueue
     public function handle()
     {
         // create a video format...
-        $lowBitrateFormat = (new X264('libmp3lame', 'libx264'))->setKiloBitrate(500);
+        $lowBitrateFormat = (new X264('libmp3lame', 'h264_nvenc'))->setKiloBitrate(500);
 
         $converted_name = $this->getCleanFileName($this->video->path);
 
@@ -46,15 +46,15 @@ class ConvertVideoForStreaming implements ShouldQueue
             ->open($this->video->path)
 
             // add the 'resize' filter...
-            ->addFilter(function ($filters) {
+/*            ->addFilter(function ($filters) {
                 $filters->resize(new Dimension(960, 540));
             })
-
+*/
             // call the 'export' method...
             ->export()
 
             // tell the MediaExporter to which disk and in which format we want to export...
-            ->toDisk('public')
+            ->toDisk('converted')
             ->inFormat($lowBitrateFormat)
 
             // call the 'save' method with a filename...

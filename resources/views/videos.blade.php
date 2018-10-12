@@ -15,7 +15,7 @@
                         </h4>
                     </div>
                     @if($video->processed)
-                        <video src="/storage/{{$video->stream_path}}"
+                        <video src="/storage/converted/{{$video->stream_path}}"
                                class="w-100"
                                controls></video>
                     @else
