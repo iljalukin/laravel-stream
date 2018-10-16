@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Download;
+use Validator;
 use App\Jobs\DownloadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -17,16 +18,31 @@ class DownloadController extends Controller
      */
     public function store(Request $request)
     {
-        $download = Download::create([
-            'url' => $request->json()->get('url'),
-        ]);
+        $data = $request->json()->all();
+        $rules = [
+            'url' => 'required|url'
+        ];
 
-        DownloadFile::dispatch($download)->onQueue('download');
+        $validator = Validator::make($data, $rules);
+        
+        if ($validator->passes())
+        {
+            $download = Download::create([
+                'url' => $request->json()->get('url')
+            ]);
 
-        return response()->json([
-            'message' => 'File is queued for download',
-            'code' => '200'
-        ]);
+            DownloadFile::dispatch($download)->onQueue('download');
+
+            return response()->json([
+                'message' => 'File is queued for download'
+            ])->setStatusCode(200);
+        }
+        else
+        {
+            return response()->json([
+                'message' => $validator->errors()->all()
+            ])->setStatusCode(400);
+        }
     }
 
     public function jobs()
