@@ -21,4 +21,11 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/uploader', 'VideoController@uploader')->name('uploader');
 
     Route::post('/upload', 'VideoController@store')->name('upload');
+
+    Route::get('/jobs', 'VideoController@jobs')->name('jobs');
+
+});
+
+Route::group(['prefix' => 'api'], function(){
+    Route::post('/download', 'DownloadController@store')->name('download');
 });

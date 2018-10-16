@@ -37,7 +37,7 @@ class ConvertVideoForStreaming implements ShouldQueue
     public function handle()
     {
         // create a video format...
-        $lowBitrateFormat = (new X264('libmp3lame', 'h264_nvenc'))->setKiloBitrate(500);
+        $lowBitrateFormat = (new X264('libmp3lame', 'libx264'))->setKiloBitrate(500);
 
         $converted_name = $this->getCleanFileName($this->video->path);
 
@@ -68,7 +68,28 @@ class ConvertVideoForStreaming implements ShouldQueue
         ]);
     }
 
+    /**
+     * The job failed to process.
+     *
+     * @param  Exception  $exception
+     * @return void
+     */
+    public function failed(Exception $exception)
+    {
+        // Send user notification of failure, etc...
+    }
+
     private function getCleanFileName($filename){
         return preg_replace('/\\.[^.\\s]{3,4}$/', '', $filename) . '.mp4';
+    }
+
+    /**
+     * Return all the jobs.
+     *
+     * @return array
+     */
+    public function jobs()
+    {
+        return $this->onQueue();
     }
 }

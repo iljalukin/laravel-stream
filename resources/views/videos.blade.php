@@ -5,7 +5,7 @@
         <h3 class="text-center">
             Videos
         </h3>
-        
+        {{ $videos->links() }}
         @foreach($videos as $video)
             <div class="row mt-5">
                 <div class="video" >
@@ -27,4 +27,5 @@
             </div>
         @endforeach
     </div>
+    {{ $videos->links() }}
 @endSection

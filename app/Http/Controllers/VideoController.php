@@ -6,6 +6,7 @@ use App\Http\Requests\StoreVideoRequest;
 use App\Jobs\ConvertVideoForStreaming;
 use App\Video;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VideoController extends Controller
 {
@@ -16,8 +17,8 @@ class VideoController extends Controller
      */
     public function index()
     {
-        $videos = Video::orderBy('created_at', 'DESC')->get();
-        return view('videos')->with('videos', $videos);
+        $videos = Video::orderBy('created_at', 'DESC')->paginate(5);
+        return view('videos', ['videos' => $videos]);
     }
 
     /**
@@ -52,5 +53,10 @@ class VideoController extends Controller
                 'message',
                 'Your video will be available shortly after we process it'
             );
+    }
+
+    public function jobs()
+    {
+        return DB::table('jobs')->where('queue','video')->count();
     }
 }
