@@ -31,4 +31,6 @@ Route::group(['prefix' => 'api'], function(){
         Route::get('/video', 'VideoController@jobs')->name('jobs');
         Route::get('/download', 'DownloadController@jobs')->name('jobs');
     });
+    Route::post('/status', 'VideoController@status')->name('status');
+    Route::get('/videos', 'VideoController@finished')->name('videos');
 });

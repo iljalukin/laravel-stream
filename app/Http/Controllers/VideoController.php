@@ -7,6 +7,7 @@ use App\Jobs\ConvertVideoForStreaming;
 use App\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Validator;
 
 class VideoController extends Controller
 {
@@ -67,5 +68,41 @@ class VideoController extends Controller
             return response()->json($response,200);
         }
         else return response()->json(array('message' => 'not found'),401);
+    }
+
+    public function finished()
+    {
+        $videos = DB::table('videos')->where('converted_for_streaming_at','<>', 'NULL')->pluck('title', 'path');
+
+        return response()->json($videos,200);
+    }
+
+    public function status(Request $request)
+    {
+        $data = $request->json()->all();
+        $rules = [
+            'mediakey' => 'required'
+        ];
+
+        $video = Video::where('path', $request->json()->get('mediakey'));
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->passes())
+        {
+            $video->update(['processed' => true]);
+
+            return response()->json([
+                'message' => 'Media set as processed'
+            ])->setStatusCode(200);
+        }
+        else
+        {
+            return response()->json([
+                'message' => $validator->errors()->all()
+            ])->setStatusCode(400);
+        }
+
+
     }
 }
