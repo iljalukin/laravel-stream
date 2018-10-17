@@ -24,7 +24,7 @@ class DownloadController extends Controller
         ];
 
         $validator = Validator::make($data, $rules);
-        
+
         if ($validator->passes())
         {
             $download = Download::create([
@@ -47,6 +47,15 @@ class DownloadController extends Controller
 
     public function jobs()
     {
-        return DB::table('jobs')->where('queue','download')->count();
+        $payload = DB::table('jobs')->where('queue','download')->value('payload');
+
+        $jsonpayload = json_decode($payload);
+
+        if(isset($jsonpayload->data->command))
+        {
+            $response = unserialize($jsonpayload->data->command);
+            return response()->json($response,200);
+        }
+        else return response()->json(array('message' => 'not found'),401);
     }
 }

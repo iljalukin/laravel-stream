@@ -57,6 +57,15 @@ class VideoController extends Controller
 
     public function jobs()
     {
-        return DB::table('jobs')->where('queue','video')->count();
+        $payload = DB::table('jobs')->where('queue','video')->value('payload');
+
+        $jsonpayload = json_decode($payload);
+
+        if(isset($jsonpayload->data->command))
+        {
+            $response = unserialize($jsonpayload->data->command);
+            return response()->json($response,200);
+        }
+        else return response()->json(array('message' => 'not found'),401);
     }
 }
