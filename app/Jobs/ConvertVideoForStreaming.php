@@ -4,9 +4,9 @@ namespace App\Jobs;
 
 use FFMpeg;
 use App\Video;
+use App\Format\Video\H264;
 use Carbon\Carbon;
 use FFMpeg\Coordinate\Dimension;
-use FFMpeg\Format\Video\X264;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -37,9 +37,13 @@ class ConvertVideoForStreaming implements ShouldQueue
     public function handle()
     {
         // create a video format...
-        $lowBitrateFormat = (new X264('libmp3lame', 'libx264'))->setKiloBitrate(500);
+        $target = $this->video->target;
 
-        $converted_name = $this->getCleanFileName($this->video->path);
+        $lowBitrateFormat = (new H264('libmp3lame', 'libx264'))
+            ->setKiloBitrate($target['vbr'])
+            ->setAudioKiloBitrate($target['abr']);
+
+        $converted_name = $this->video->path .'_' . $target['label'] . '.' . $target['format'];
 
         // open the uploaded video from the right disk...
         FFMpeg::fromDisk($this->video->disk)

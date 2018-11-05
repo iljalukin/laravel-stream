@@ -4,12 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Download;
 use Validator;
+use Illuminate\Validation\Rule;
 use App\Jobs\DownloadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class DownloadController extends Controller
 {
+
+    public function index()
+    {
+        $downloads = Download::orderBy('created_at', 'DESC')->paginate(5);
+        return view('downloads', ['downloads' => $downloads]);
+    }
 
     /**
      * Handles form submission after uploader form submits
@@ -19,8 +27,15 @@ class DownloadController extends Controller
     public function store(Request $request)
     {
         $data = $request->json()->all();
+
         $rules = [
-            'url' => 'required|url'
+            'source' => 'required|url',
+            'target.*.label' => 'required',
+            'target.*.size' => 'required',
+            'target.*.vbr' => 'required|integer',
+            'target.*.abr' => 'required|integer',
+            'target.*.format' => ['required', Rule::in(['mp4','m4v'])]
+
         ];
 
         $validator = Validator::make($data, $rules);
@@ -28,7 +43,7 @@ class DownloadController extends Controller
         if ($validator->passes())
         {
             $download = Download::create([
-                'url' => $request->json()->get('url')
+                'payload' => $request->json()->all()
             ]);
 
             DownloadFile::dispatch($download)->onQueue('download');
@@ -43,6 +58,24 @@ class DownloadController extends Controller
                 'message' => $validator->errors()->all()
             ])->setStatusCode(400);
         }
+    }
+
+    public function downloadJobs()
+    {
+        $downloadJobs = array();
+        $payloads = DB::table('jobs')->where('queue','download')->pluck('payload');
+
+        foreach($payloads as $payload)
+        {
+            $jsonpayload = json_decode($payload);
+
+            if(isset($jsonpayload->data->command))
+            {
+                $downloadJobs[] = unserialize($jsonpayload->data->command);
+            }
+        }
+
+        return view('downloadJobs', ['downloadJobs' => $downloadJobs]);
     }
 
     public function jobs()

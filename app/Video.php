@@ -13,6 +13,10 @@ class Video extends Model
     protected $guarded = [];
 
     protected $fillable = [
-        'processed'
+       'title','original_name','disk', 'path', 'stream_path', 'processed', 'target'
     ];
+
+    public $attributes = [];
+
+    protected $casts = ['target' => 'json'];
 }

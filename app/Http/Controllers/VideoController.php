@@ -7,6 +7,7 @@ use App\Jobs\ConvertVideoForStreaming;
 use App\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Validator;
 
 class VideoController extends Controller
@@ -28,6 +29,24 @@ class VideoController extends Controller
      */
     public function uploader(){
         return view('uploader');
+    }
+
+    public function videoJobs()
+    {
+        $jobs = array();
+        $payloads = DB::table('jobs')->where('queue','video')->pluck('payload');
+
+        foreach($payloads as $payload)
+        {
+            $jsonpayload = json_decode($payload);
+
+            if(isset($jsonpayload->data->command))
+            {
+                $jobs[] = unserialize($jsonpayload->data->command);
+            }
+        }
+
+        return view('videoJobs', ['videoJobs' => $jobs]);
     }
 
     /**
@@ -102,7 +121,5 @@ class VideoController extends Controller
                 'message' => $validator->errors()->all()
             ])->setStatusCode(400);
         }
-
-
     }
 }

@@ -19,6 +19,7 @@ class CreateVideosTable extends Migration
             $table->string('original_name');
             $table->string('disk');
             $table->string('path');
+            $table->string('target');
             $table->string('stream_path')->nullable();
             $table->boolean('processed')->default(false);
             $table->datetime('converted_for_streaming_at')->nullable();

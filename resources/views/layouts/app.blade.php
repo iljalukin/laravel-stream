@@ -41,6 +41,12 @@
                             </li>
                         @else
                             <li class="nav-item">
+                                <a class="nav-link" href="{{ route('downloadJobs') }}">{{ __('Downloadjobs') }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ route('videoJobs') }}">{{ __('Videojobs') }}</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{{ route('uploader') }}">{{ __('Uploader') }}</a>
                             </li>
 

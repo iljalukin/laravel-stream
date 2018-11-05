@@ -38,22 +38,33 @@ class DownloadFile implements ShouldQueue
     {
         //TODO: Download queued file
 
-        $path = str_random(16) . '.' . "mp4";
+        $path = str_random(16);
+
+        $payload = $this->download->payload;
+
 
         $guzzle = new Client();
-        $response = $guzzle->get($this->download->url);
+        $response = $guzzle->get($payload['source']);
         Storage::disk('uploaded')->put($path, $response->getBody());
 
         $this->download->update(['processed' => true]);
 
-        $video = Video::create([
-            'disk'          => 'uploaded',
-            'original_name' => basename($this->download->url),
-            'path'          => $path,
-            'title'         => basename($this->download->url),
-        ]);
 
-        ConvertVideoForStreaming::dispatch($video)->onQueue('video');
+        $filename = basename($payload['source']);
+
+        foreach($payload['target'] as $target)
+        {
+            $video = Video::create([
+                'disk'          => 'uploaded',
+                'original_name' => $filename,
+                'path'          => $path,
+                'title'         => $filename,
+                'target'        => $target
+            ]);
+
+            ConvertVideoForStreaming::dispatch($video)->onQueue('video');
+        }
+
     }
 
     /**
@@ -62,7 +73,7 @@ class DownloadFile implements ShouldQueue
      * @param  Exception  $exception
      * @return void
      */
-    public function failed(Exception $exception)
+    public function failed($exception)
     {
         // Send user notification of failure, etc...
     }
