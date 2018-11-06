@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreVideoRequest;
-use App\Jobs\ConvertVideoForStreaming;
+use App\Jobs\ConvertVideo;
 use App\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -64,9 +64,10 @@ class VideoController extends Controller
             'original_name' => $request->video->getClientOriginalName(),
             'path'          => $path,
             'title'         => $request->title,
+            'target'        => ['1080p', 4000, 256, 'mp4']
         ]);
 
-        ConvertVideoForStreaming::dispatch($video);
+        ConvertVideo::dispatch($video);
 
         return redirect('/')
             ->with(
@@ -91,7 +92,7 @@ class VideoController extends Controller
 
     public function finished()
     {
-        $videos = DB::table('videos')->where('converted_for_streaming_at','<>', 'NULL')->pluck('title', 'path');
+        $videos = DB::table('videos')->where('converted_at','<>', 'NULL')->pluck('title', 'path');
 
         return response()->json($videos,200);
     }
@@ -101,6 +102,33 @@ class VideoController extends Controller
         $data = $request->json()->all();
         $rules = [
             'mediakey' => 'required'
+        ];
+
+        $video = Video::where('path', $request->json()->get('mediakey'));
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->passes())
+        {
+            $video->update(['processed' => true]);
+
+            return response()->json([
+                'message' => 'Media set as processed'
+            ])->setStatusCode(200);
+        }
+        else
+        {
+            return response()->json([
+                'message' => $validator->errors()->all()
+            ])->setStatusCode(400);
+        }
+    }
+
+    public function videos(Request $request)
+    {
+        $data = $request->json()->all();
+        $rules = [
+            'apikey' => 'required|min:32|max:32'
         ];
 
         $video = Video::where('path', $request->json()->get('mediakey'));

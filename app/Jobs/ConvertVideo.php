@@ -13,12 +13,13 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 
-class ConvertVideoForStreaming implements ShouldQueue
+class ConvertVideo implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $video;
 
+    private $dimension;
     /**
      * Create a new job instance.
      *
@@ -27,6 +28,10 @@ class ConvertVideoForStreaming implements ShouldQueue
     public function __construct(Video $video)
     {
         $this->video = $video;
+        $target = $this->video->target;
+
+        $size = explode('x', $target['size']);
+        $this->dimension = new Dimension($size[0], $size[1]);
     }
 
     /**
@@ -50,10 +55,10 @@ class ConvertVideoForStreaming implements ShouldQueue
             ->open($this->video->path)
 
             // add the 'resize' filter...
-/*            ->addFilter(function ($filters) {
-                $filters->resize(new Dimension(960, 540));
+            ->addFilter(function ($filters) {
+                $filters->resize($this->dimension);
             })
-*/
+
             // call the 'export' method...
             ->export()
 
@@ -66,7 +71,7 @@ class ConvertVideoForStreaming implements ShouldQueue
 
         // update the database so we know the convertion is done!
         $this->video->update([
-            'converted_for_streaming_at' => Carbon::now(),
+            'converted_at' => Carbon::now(),
             'processed' => true,
             'stream_path' => $converted_name
         ]);

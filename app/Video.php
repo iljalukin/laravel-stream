@@ -6,14 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Video extends Model
 {
-    protected $dates = [
-        'converted_for_streaming_at',
-    ];
-
     protected $guarded = [];
 
     protected $fillable = [
-       'title','original_name','disk', 'path', 'stream_path', 'processed', 'target'
+       'uid', 'title', 'original_name', 'disk', 'path', 'stream_path', 'processed', 'target', 'converted_at'
     ];
 
     public $attributes = [];

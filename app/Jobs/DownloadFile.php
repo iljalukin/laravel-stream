@@ -38,19 +38,19 @@ class DownloadFile implements ShouldQueue
     {
         //TODO: Download queued file
 
-        $path = str_random(16);
+
 
         $payload = $this->download->payload;
-
+        $path = $payload['source']['mediakey'];
 
         $guzzle = new Client();
-        $response = $guzzle->get($payload['source']);
+        $response = $guzzle->get($payload['source']['url']);
         Storage::disk('uploaded')->put($path, $response->getBody());
 
         $this->download->update(['processed' => true]);
 
 
-        $filename = basename($payload['source']);
+        $filename = basename($payload['source']['url']);
 
         foreach($payload['target'] as $target)
         {
@@ -62,7 +62,7 @@ class DownloadFile implements ShouldQueue
                 'target'        => $target
             ]);
 
-            ConvertVideoForStreaming::dispatch($video)->onQueue('video');
+            ConvertVideo::dispatch($video)->onQueue('video');
         }
 
     }

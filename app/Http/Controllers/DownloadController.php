@@ -29,12 +29,14 @@ class DownloadController extends Controller
         $data = $request->json()->all();
 
         $rules = [
-            'source' => 'required|url',
-            'target.*.label' => 'required',
-            'target.*.size' => 'required',
-            'target.*.vbr' => 'required|integer',
-            'target.*.abr' => 'required|integer',
-            'target.*.format' => ['required', Rule::in(['mp4','m4v'])]
+            'apikey'            => 'required|alpha_num|min:32|max:32',
+            'source.url'        => 'required|url',
+            'source.mediakey'   => 'required|alpha_num|min:32|max:32',
+            'target.*.label'    => 'required',
+            'target.*.size'     => ['required', 'regex:/^(\d+)x(\d+)/'],
+            'target.*.vbr'      => 'required|integer',
+            'target.*.abr'      => 'required|integer',
+            'target.*.format'   => ['required', Rule::in(['mp4','m4v'])]
 
         ];
 

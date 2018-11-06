@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\ConvertVideoForStreaming;
+use App\Jobs\ConvertVideo;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller

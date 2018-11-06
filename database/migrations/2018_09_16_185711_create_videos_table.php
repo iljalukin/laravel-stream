@@ -15,6 +15,7 @@ class CreateVideosTable extends Migration
     {
         Schema::create('videos', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('uid');
             $table->string('title');
             $table->string('original_name');
             $table->string('disk');
@@ -22,7 +23,7 @@ class CreateVideosTable extends Migration
             $table->string('target');
             $table->string('stream_path')->nullable();
             $table->boolean('processed')->default(false);
-            $table->datetime('converted_for_streaming_at')->nullable();
+            $table->datetime('converted_at')->nullable();
             $table->timestamps();
         });
     }
