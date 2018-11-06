@@ -14,11 +14,13 @@ class UsersTableSeeder extends Seeder {
                 'name'      => 'admin',
                 'email'      => 'admin@example.org',
                 'password'   => Hash::make('admin'),
+		'api_token'   => str_random(32),
             ),
             array(
                 'name'      => 'user',
                 'email'      => 'user@example.org',
                 'password'   => Hash::make('user'),
+		'api_token'  => str_random(32),
             )
         );
 

@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Client;
 use Illuminate\Http\File;
@@ -38,8 +39,6 @@ class DownloadFile implements ShouldQueue
     {
         //TODO: Download queued file
 
-
-
         $payload = $this->download->payload;
         $path = $payload['source']['mediakey'];
 
@@ -55,6 +54,7 @@ class DownloadFile implements ShouldQueue
         foreach($payload['target'] as $target)
         {
             $video = Video::create([
+                'uid'       => $this->download->uid,
                 'disk'          => 'uploaded',
                 'original_name' => $filename,
                 'path'          => $path,

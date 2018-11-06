@@ -9,6 +9,7 @@ use App\Jobs\DownloadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class DownloadController extends Controller
 {
@@ -29,7 +30,7 @@ class DownloadController extends Controller
         $data = $request->json()->all();
 
         $rules = [
-            'apikey'            => 'required|alpha_num|min:32|max:32',
+            'api_token'            => 'required|alpha_num|min:32|max:32',
             'source.url'        => 'required|url',
             'source.mediakey'   => 'required|alpha_num|min:32|max:32',
             'target.*.label'    => 'required',
@@ -44,8 +45,10 @@ class DownloadController extends Controller
 
         if ($validator->passes())
         {
+            $request->offsetUnset('api_token');
             $download = Download::create([
-                'payload' => $request->json()->all()
+                'uid'       => Auth::guard('api')->user()->id,
+                'payload'   => $request->json()->all()
             ]);
 
             DownloadFile::dispatch($download)->onQueue('download');

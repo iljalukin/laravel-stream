@@ -128,7 +128,7 @@ class VideoController extends Controller
     {
         $data = $request->json()->all();
         $rules = [
-            'apikey' => 'required|min:32|max:32'
+            'api_token' => 'required|min:32|max:32'
         ];
 
         $video = Video::where('path', $request->json()->get('mediakey'));

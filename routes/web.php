@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth']], function(){
 
 });
 
-Route::group(['prefix' => 'api'], function(){
+Route::group(['prefix' => 'api', 'middleware' => ['auth:api']], function(){
     Route::post('/download', 'DownloadController@store')->name('download');
 
     Route::group(['prefix' => 'jobs'], function(){
