@@ -8,6 +8,7 @@ use App\Video;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class VideoController extends Controller
@@ -90,11 +91,33 @@ class VideoController extends Controller
         else return response()->json(array('message' => 'not found'),401);
     }
 
-    public function finished()
+    public function finished(Request $request)
     {
-        $videos = DB::table('videos')->where('converted_at','<>', 'NULL')->pluck('title', 'path');
+        $data = $request->json()->all();
 
-        return response()->json($videos,200);
+        $rules = [
+            'api_token' => 'required|alpha_num|min:32|max:32',
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->passes())
+        {
+            $videos = DB::table('videos')
+                ->where('uid', '=', Auth::guard('api')->user()->id)
+                ->where('converted_at','<>', 'NULL')
+                ->pluck('title', 'stream_path');
+
+            return response()->json($videos,200);
+        }
+        else
+        {
+            return response()->json([
+                'message' => $validator->errors()->all()
+            ])->setStatusCode(400);
+        }
+
+
     }
 
     public function status(Request $request)
