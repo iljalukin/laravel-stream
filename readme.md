@@ -7,6 +7,7 @@ $ git clone https://github.com/waleedahmad/laravel-stream.git
 $ composer install
 $ php artisan preset bootstrap
 $ npm install && npm run dev
+$ php artisan key:generate
 
 # update database credentials, queue connection driver and FFmpeg binaries
 # if you're running app on Windows.
@@ -20,7 +21,16 @@ QUEUE_CONNECTION=database
 
 FFMPEG_BINARIES=''
 FFPROBE_BINARIES=''
+
+# connection settings for sqlite db
+DB_CONNECTION=sqlite
+DB_FILENAME=database/database.sqlite
+
+$ touch database/database.sqlite
+$ php artisan migrate
+$ php artisan db:seed
 ```
+
 
 #### Running queue worker
 ```
