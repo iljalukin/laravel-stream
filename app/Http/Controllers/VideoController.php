@@ -103,12 +103,13 @@ class VideoController extends Controller
 
         if ($validator->passes())
         {
-            $videos = DB::table('videos')
+            $videos = collect(DB::table('videos')
                 ->where('uid', '=', Auth::guard('api')->user()->id)
                 ->where('converted_at','<>', 'NULL')
-                ->pluck('title', 'stream_path');
+                ->pluck( 'stream_path'))
+                ->map(function ($item, $key) use($request) { return route('getFile', $item); });
 
-            return response()->json($videos,200);
+            return response()->json($videos->all(),200);
         }
         else
         {
@@ -116,7 +117,17 @@ class VideoController extends Controller
                 'message' => $validator->errors()->all()
             ])->setStatusCode(400);
         }
+    }
 
+    public function getFile($filename)
+    {
+        $file = storage_path('app/public/converted/'. $filename);
+        if(file_exists($file))
+        {
+            return response()->download($file, null, [], null);
+        }
+
+        return response()->json("File not found", 404);
 
     }
 

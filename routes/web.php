@@ -30,6 +30,8 @@ Route::group(['middleware' => ['auth']], function(){
 
 Route::group(['prefix' => 'api', 'middleware' => ['auth:api']], function(){
     Route::post('/download', 'DownloadController@store')->name('download');
+    Route::get('/file/{filename}', 'VideoController@getFile')->name('getFile');
+
 
     Route::group(['prefix' => 'jobs'], function(){
         Route::get('/video', 'VideoController@jobs')->name('jobs');
@@ -37,4 +39,5 @@ Route::group(['prefix' => 'api', 'middleware' => ['auth:api']], function(){
     });
     Route::post('/status', 'VideoController@status')->name('status');
     Route::post('/videos', 'VideoController@finished')->name('videos');
+
 });
