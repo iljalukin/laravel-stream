@@ -27,6 +27,7 @@ class DownloadController extends Controller
      */
     public function store(Request $request)
     {
+        Log::warning("warning");
         $data = $request->json()->all();
 
         $rules = [
@@ -54,13 +55,15 @@ class DownloadController extends Controller
             DownloadFile::dispatch($download)->onQueue('download');
 
             return response()->json([
-                'message' => 'File is queued for download'
+                'message' => 'File is queued for download',
+                'status'  => 'success'
             ])->setStatusCode(200);
         }
         else
         {
             return response()->json([
-                'message' => $validator->errors()->all()
+                'message' => $validator->errors()->all(),
+                'status'  => 'failed'
             ])->setStatusCode(400);
         }
     }
