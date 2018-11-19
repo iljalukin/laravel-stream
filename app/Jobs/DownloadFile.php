@@ -37,7 +37,6 @@ class DownloadFile implements ShouldQueue
      */
     public function handle()
     {
-        //TODO: Download queued file
 
         $payload = $this->download->payload;
         $path = $payload['source']['mediakey'];
@@ -53,10 +52,12 @@ class DownloadFile implements ShouldQueue
 
         foreach($payload['target'] as $target)
         {
+            $target['created_at'] = $payload['source']['created_at'];
+
             $video = Video::create([
-                'uid'       => $this->download->uid,
+                'uid'           => $this->download->uid,
                 'disk'          => 'uploaded',
-                'original_name' => $filename,
+                'mediakey'      => $payload['source']['mediakey'],
                 'path'          => $path,
                 'title'         => $filename,
                 'target'        => $target
@@ -64,7 +65,31 @@ class DownloadFile implements ShouldQueue
 
             ConvertVideo::dispatch($video)->onQueue('video');
         }
+/*
+        if(isset($payload['spritemap']))
+        {
+            $spritemap = Video::create([
+                'uid'           => $this->download->uid,
+                'disk'          => 'uploaded',
+                'mediakey'      => $payload['source']['mediakey'],
+                'path'          => $path,
+                'title'         => $filename,
+                'target'        => $target
+            ]);
 
+            CreateSpritemap::dispatch($spritemap)->onQUeue('image');
+        }*/
+
+        $thumbnail = Video::create([
+            'uid'           => $this->download->uid,
+            'disk'          => 'uploaded',
+            'mediakey'      => $payload['source']['mediakey'],
+            'path'          => $path,
+            'title'         => $filename,
+            'target'        => $target
+        ]);
+
+        CreateThumbnail::dispatch($thumbnail)->onQUeue('video');
     }
 
     /**

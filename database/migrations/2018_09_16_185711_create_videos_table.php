@@ -17,7 +17,7 @@ class CreateVideosTable extends Migration
             $table->increments('id');
             $table->integer('uid');
             $table->string('title');
-            $table->string('original_name');
+            $table->string('mediakey');
             $table->string('disk');
             $table->string('path');
             $table->string('target');

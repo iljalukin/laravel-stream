@@ -17,7 +17,7 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ConvertVideo implements ShouldQueue
+class CreateSpritemap implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -111,17 +111,9 @@ class ConvertVideo implements ShouldQueue
             RequestOptions::JSON => [
                 'api_token' => $api_token,
                 'mediakey' => $this->video->mediakey,
-                'medium' => [
-                    'label' => $target['label'],
+                'spritemap' => [
+                    'count' => 100,
                     'url' =>  route('getFile', $converted_name)
-                ],
-                'properties' => [
-                    'source-width' => $source_format->get('width'),
-                    'source-height' => $source_format->get('width'),
-                    'duration' => $target_format->get('duration'),
-                    'filesize' => $target_format->get('filesize'),
-                    'width' => $target_format->get('width'),
-                    'height' => $target_format->get('height')
                 ]
             ]
         ]);

@@ -34,6 +34,7 @@ class DownloadController extends Controller
             'api_token'            => 'required|alpha_num|min:32|max:32',
             'source.url'        => 'required|url',
             'source.mediakey'   => ['required','alpha_num', 'min:32', 'max:32'],
+            'source.created_at' => 'required',
             'target.*.label'    => 'required',
             'target.*.size'     => ['required', 'regex:/^(\d+)x(\d+)/'],
             'target.*.vbr'      => 'required|integer',

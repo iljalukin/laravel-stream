@@ -17,7 +17,7 @@ use GuzzleHttp\RequestOptions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-class ConvertVideo implements ShouldQueue
+class CreateThumbnail implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -47,39 +47,33 @@ class ConvertVideo implements ShouldQueue
     {
         // create a video format...
         $target = $this->video->target;
-        $separator = '_';
-
-        if(isset($target['default']) && $target['default'] == true)
-        {
-            $target['label'] = '';
-            $separator = '';
-        }
 
 
-        $lowBitrateFormat = (new H264('aac', 'libx264'))
-            ->setKiloBitrate($target['vbr'])
-            ->setAudioKiloBitrate($target['abr']);
 
-        $converted_name = $this->video->path . '_' . $target['created_at'] . $separator . $target['label'] . '.' . $target['format'];
+        $converted_name = $this->video->path . '_' . $target['created_at'] . '.jpg';
+
+        $converted_path = storage_path('app/public/converted/' . $converted_name);
+
+        //$ffmpeg = FFMpeg\FFMpeg::create()->open($this->video->path)->frame(FMpeg\Coordinate\TimeCode::fromSeconds(42))->save();
 
         // open the uploaded video from the right disk...
         FFMpeg::fromDisk($this->video->disk)
             ->open($this->video->path)
+            ->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(2))
 
             // add the 'resize' filter...
-            ->addFilter(function ($filters) {
-                $filters->resize($this->dimension);
-            })
+           // ->addFilter(function ($filters) {
+           //     $filters->resize($this->dimension);
+           // })
 
             // call the 'export' method...
-            ->export()
+            //->export()
 
             // tell the MediaExporter to which disk and in which format we want to export...
-            ->toDisk('converted')
-            ->inFormat($lowBitrateFormat)
+            //->toDisk('converted')
 
             // call the 'save' method with a filename...
-            ->save($converted_name);
+            ->save($converted_path);
 
         // update the database so we know the convertion is done!
         $this->video->update([
@@ -87,18 +81,6 @@ class ConvertVideo implements ShouldQueue
             'processed' => true,
             'stream_path' => $converted_name
         ]);
-
-        $ffprobe = FFMpeg\FFProbe::create();
-
-        $source_format = $ffprobe
-            ->streams(storage_path('app/public/uploaded/' . $this->video->path)) // extracts streams informations
-            ->videos()
-            ->first();
-
-        $target_format = $ffprobe
-            ->streams(storage_path('app/public/converted/' . $converted_name)) // extracts streams informations
-            ->videos()
-            ->first();
 
         $guzzle = new Client();
 
@@ -111,17 +93,8 @@ class ConvertVideo implements ShouldQueue
             RequestOptions::JSON => [
                 'api_token' => $api_token,
                 'mediakey' => $this->video->mediakey,
-                'medium' => [
-                    'label' => $target['label'],
-                    'url' =>  route('getFile', $converted_name)
-                ],
-                'properties' => [
-                    'source-width' => $source_format->get('width'),
-                    'source-height' => $source_format->get('width'),
-                    'duration' => $target_format->get('duration'),
-                    'filesize' => $target_format->get('filesize'),
-                    'width' => $target_format->get('width'),
-                    'height' => $target_format->get('height')
+                'thumbnail' => [
+                    'url' =>  route('getFile', $converted_path)
                 ]
             ]
         ]);
@@ -137,7 +110,7 @@ class ConvertVideo implements ShouldQueue
     public function failed($exception)
     {
         // Send user notification of failure, etc...
-        echo $exception;
+        var_dump($exception->getMessage());
     }
 
     /**

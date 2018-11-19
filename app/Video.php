@@ -9,7 +9,7 @@ class Video extends Model
     protected $guarded = [];
 
     protected $fillable = [
-       'uid', 'title', 'original_name', 'disk', 'path', 'stream_path', 'processed', 'target', 'converted_at'
+       'uid', 'title', 'mediakey', 'disk', 'path', 'stream_path', 'processed', 'target', 'converted_at'
     ];
 
     public $attributes = [];

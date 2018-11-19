@@ -62,7 +62,7 @@ class VideoController extends Controller
 
         $video = Video::create([
             'disk'          => 'uploaded',
-            'original_name' => $request->video->getClientOriginalName(),
+            'mediakey' => $request->video->getClientOriginalName(),
             'path'          => $path,
             'title'         => $request->title,
             'target'        => ['1080p', 4000, 256, 'mp4']
