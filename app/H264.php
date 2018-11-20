@@ -15,8 +15,9 @@
 
 namespace App\Format\Video;
 
+use FFMpeg\Format\ProgressableInterface;
 
-class H264 extends \FFMpeg\Format\Video\DefaultVideo
+class H264 extends \FFMpeg\Format\Video\DefaultVideo implements ProgressableInterface
 {
     /** @var boolean */
     private $bframesSupport = true;
@@ -64,7 +65,7 @@ class H264 extends \FFMpeg\Format\Video\DefaultVideo
      */
     public function getAvailableVideoCodecs()
     {
-        return array('libx264','nvenc_h264');
+        return array('libx264', 'nvenc_h264', 'h264_vaapi');
     }
 
     /**

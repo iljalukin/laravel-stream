@@ -48,8 +48,6 @@ class CreateThumbnail implements ShouldQueue
         // create a video format...
         $target = $this->video->target;
 
-
-
         $converted_name = $this->video->path . '_' . $target['created_at'] . '.jpg';
 
         $converted_path = storage_path('app/public/converted/' . $converted_name);
@@ -60,19 +58,6 @@ class CreateThumbnail implements ShouldQueue
         FFMpeg::fromDisk($this->video->disk)
             ->open($this->video->path)
             ->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(2))
-
-            // add the 'resize' filter...
-           // ->addFilter(function ($filters) {
-           //     $filters->resize($this->dimension);
-           // })
-
-            // call the 'export' method...
-            //->export()
-
-            // tell the MediaExporter to which disk and in which format we want to export...
-            //->toDisk('converted')
-
-            // call the 'save' method with a filename...
             ->save($converted_path);
 
         // update the database so we know the convertion is done!
@@ -94,7 +79,7 @@ class CreateThumbnail implements ShouldQueue
                 'api_token' => $api_token,
                 'mediakey' => $this->video->mediakey,
                 'thumbnail' => [
-                    'url' =>  route('getFile', $converted_path)
+                    'url' =>  route('getFile', $converted_name)
                 ]
             ]
         ]);
@@ -110,7 +95,7 @@ class CreateThumbnail implements ShouldQueue
     public function failed($exception)
     {
         // Send user notification of failure, etc...
-        var_dump($exception->getMessage());
+        dd($exception);
     }
 
     /**

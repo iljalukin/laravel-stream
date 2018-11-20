@@ -65,7 +65,7 @@ class DownloadFile implements ShouldQueue
 
             ConvertVideo::dispatch($video)->onQueue('video');
         }
-/*
+
         if(isset($payload['spritemap']))
         {
             $spritemap = Video::create([
@@ -77,8 +77,8 @@ class DownloadFile implements ShouldQueue
                 'target'        => $target
             ]);
 
-            CreateSpritemap::dispatch($spritemap)->onQUeue('image');
-        }*/
+            CreateSpritemap::dispatch($spritemap)->onQUeue('video');
+        }
 
         $thumbnail = Video::create([
             'uid'           => $this->download->uid,

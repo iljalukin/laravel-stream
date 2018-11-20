@@ -56,30 +56,34 @@ class ConvertVideo implements ShouldQueue
         }
 
 
-        $lowBitrateFormat = (new H264('aac', 'libx264'))
+        $lowBitrateFormat = (new H264('aac', 'h264_vaapi'))
             ->setKiloBitrate($target['vbr'])
             ->setAudioKiloBitrate($target['abr']);
 
+        $lowBitrateFormat->on('progress', function ($video, $format, $percentage)
+        {
+            if(($percentage % 5) == 0)
+            {
+                echo "$percentage% transcoded\n";
+            }
+        });
+
         $converted_name = $this->video->path . '_' . $target['created_at'] . $separator . $target['label'] . '.' . $target['format'];
 
-        // open the uploaded video from the right disk...
-        FFMpeg::fromDisk($this->video->disk)
-            ->open($this->video->path)
+        $converted_path = $converted_path = storage_path('app/public/converted/' . $converted_name);
 
-            // add the 'resize' filter...
-            ->addFilter(function ($filters) {
-                $filters->resize($this->dimension);
-            })
+        $ffmpeg = FFMpeg\FFMpeg::create(array(
+            'ffmpeg.binaries'  => '/usr/bin/ffmpeg',
+            'ffprobe.binaries' => '/usr/bin/ffprobe',
+            'timeout'          => 3600, // The timeout for the underlying process
+            'ffmpeg.threads'   => 12,   // The number of threads that FFMpeg should use
+        ));
 
-            // call the 'export' method...
-            ->export()
+        $video = $ffmpeg->open(storage_path('app/public/uploaded/' . $this->video->path));
 
-            // tell the MediaExporter to which disk and in which format we want to export...
-            ->toDisk('converted')
-            ->inFormat($lowBitrateFormat)
+        $video->filters()->custom('scale_vaapi='.$this->dimension->getWidth() . ':' . $this->dimension->getHeight())->synchronize();
 
-            // call the 'save' method with a filename...
-            ->save($converted_name);
+        $video->save($lowBitrateFormat, $converted_path);
 
         // update the database so we know the convertion is done!
         $this->video->update([
@@ -137,7 +141,7 @@ class ConvertVideo implements ShouldQueue
     public function failed($exception)
     {
         // Send user notification of failure, etc...
-        echo $exception;
+        dd($exception);
     }
 
     /**

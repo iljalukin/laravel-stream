@@ -47,58 +47,20 @@ class CreateSpritemap implements ShouldQueue
     {
         // create a video format...
         $target = $this->video->target;
-        $separator = '_';
 
-        if(isset($target['default']) && $target['default'] == true)
-        {
-            $target['label'] = '';
-            $separator = '';
-        }
+        $converted_name = $this->video->path . '_' . $target['created_at'] . '_sprites.jpg';
+
+        $converted_path = storage_path('app/public/converted/' . $converted_name);
+
+        //TODO replace this with php-ffmpeg
+        shell_exec('ffmpeg -nostats -loglevel 0 -i ' . storage_path('app/public/uploaded/' . $this->video->path). ' -y -vf "scale=142:80,fps=1,tile=10x10:margin=2:padding=2" ' . $converted_path);
 
 
-        $lowBitrateFormat = (new H264('aac', 'libx264'))
-            ->setKiloBitrate($target['vbr'])
-            ->setAudioKiloBitrate($target['abr']);
-
-        $converted_name = $this->video->path . '_' . $target['created_at'] . $separator . $target['label'] . '.' . $target['format'];
-
-        // open the uploaded video from the right disk...
-        FFMpeg::fromDisk($this->video->disk)
-            ->open($this->video->path)
-
-            // add the 'resize' filter...
-            ->addFilter(function ($filters) {
-                $filters->resize($this->dimension);
-            })
-
-            // call the 'export' method...
-            ->export()
-
-            // tell the MediaExporter to which disk and in which format we want to export...
-            ->toDisk('converted')
-            ->inFormat($lowBitrateFormat)
-
-            // call the 'save' method with a filename...
-            ->save($converted_name);
-
-        // update the database so we know the convertion is done!
-        $this->video->update([
+       $this->video->update([
             'converted_at' => Carbon::now(),
             'processed' => true,
             'stream_path' => $converted_name
         ]);
-
-        $ffprobe = FFMpeg\FFProbe::create();
-
-        $source_format = $ffprobe
-            ->streams(storage_path('app/public/uploaded/' . $this->video->path)) // extracts streams informations
-            ->videos()
-            ->first();
-
-        $target_format = $ffprobe
-            ->streams(storage_path('app/public/converted/' . $converted_name)) // extracts streams informations
-            ->videos()
-            ->first();
 
         $guzzle = new Client();
 
@@ -117,7 +79,6 @@ class CreateSpritemap implements ShouldQueue
                 ]
             ]
         ]);
-
     }
 
     /**
@@ -129,7 +90,7 @@ class CreateSpritemap implements ShouldQueue
     public function failed($exception)
     {
         // Send user notification of failure, etc...
-        echo $exception;
+        dd($exception);
     }
 
     /**
