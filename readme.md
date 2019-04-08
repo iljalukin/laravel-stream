@@ -1,9 +1,8 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 Example code repository for tutorial on how to transcode video using FFmpeg in Laravel using queues. 
 
 ### Setup Instructions
 ```
-$ git clone https://github.com/waleedahmad/laravel-stream.git
+$ git clone https://github.com/iljalukin/laravel-stream.git
 $ composer install
 $ php artisan preset bootstrap
 $ npm install && npm run dev
