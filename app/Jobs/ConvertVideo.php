@@ -85,7 +85,7 @@ class ConvertVideo implements ShouldQueue
 
         $video->save($lowBitrateFormat, $converted_path);
 
-        // update the database so we know the convertion is done!
+        // update the database so we know the conversion is done!
         $this->video->update([
             'converted_at' => Carbon::now(),
             'processed' => true,

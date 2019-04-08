@@ -43,7 +43,7 @@ class H264 extends \FFMpeg\Format\Video\DefaultVideo implements ProgressableInte
     /**
      * @param $support
      *
-     * @return X264
+     * @return H264
      */
     public function setBFramesSupport($support)
     {
@@ -71,7 +71,7 @@ class H264 extends \FFMpeg\Format\Video\DefaultVideo implements ProgressableInte
     /**
      * @param $passes
      *
-     * @return X264
+     * @return H264
      */
     public function setPasses($passes)
     {

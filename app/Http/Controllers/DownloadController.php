@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Download;
-use Validator;
+use Illuminate\Validation\Validator;
 use Illuminate\Validation\Rule;
 use App\Jobs\DownloadFile;
 use Illuminate\Http\Request;
@@ -60,13 +60,11 @@ class DownloadController extends Controller
                 'status'  => 'success'
             ])->setStatusCode(200);
         }
-        else
-        {
-            return response()->json([
-                'message' => $validator->errors()->all(),
-                'status'  => 'failed'
-            ])->setStatusCode(400);
-        }
+
+        return response()->json([
+            'message' => $validator->errors()->all(),
+            'status'  => 'failed'
+        ])->setStatusCode(400);
     }
 
     public function downloadJobs()

@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Validator;
+use Illuminate\Validation\Validator;
 
 class VideoController extends Controller
 {
@@ -111,12 +111,10 @@ class VideoController extends Controller
 
             return response()->json($videos->all(),200);
         }
-        else
-        {
-            return response()->json([
-                'message' => $validator->errors()->all()
-            ])->setStatusCode(400);
-        }
+
+        return response()->json([
+            'message' => $validator->errors()->all()
+        ])->setStatusCode(400);
     }
 
     public function getFile($filename)
@@ -150,12 +148,10 @@ class VideoController extends Controller
                 'message' => 'Media set as processed'
             ])->setStatusCode(200);
         }
-        else
-        {
-            return response()->json([
-                'message' => $validator->errors()->all()
-            ])->setStatusCode(400);
-        }
+
+        return response()->json([
+            'message' => $validator->errors()->all()
+        ])->setStatusCode(400);
     }
 
     public function videos(Request $request)
@@ -177,11 +173,9 @@ class VideoController extends Controller
                 'message' => 'Media set as processed'
             ])->setStatusCode(200);
         }
-        else
-        {
-            return response()->json([
-                'message' => $validator->errors()->all()
-            ])->setStatusCode(400);
-        }
+
+        return response()->json([
+            'message' => $validator->errors()->all()
+        ])->setStatusCode(400);
     }
 }
