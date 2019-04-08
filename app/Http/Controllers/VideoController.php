@@ -61,11 +61,13 @@ class VideoController extends Controller
         $request->video->storeAs('public/uploaded', $path);
 
         $video = Video::create([
+            'uid'           => Auth::id(),
             'disk'          => 'uploaded',
-            'mediakey' => $request->video->getClientOriginalName(),
+            'mediakey'      => $request->video->getClientOriginalName(),
             'path'          => $path,
             'title'         => $request->title,
-            'target'        => ['1080p', 4000, 256, 'mp4']
+            'source'        => ['url' => '', 'mediakey' => '', 'created_at' => time()],
+            'target'        => [ 'label' => '1080p', 'size' => '1920x1080', 'vbr' => 4000, 'abr' => 256, 'format' => 'mp4', 'created_at' => time()]
         ]);
 
         ConvertVideo::dispatch($video);
