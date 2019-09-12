@@ -70,7 +70,7 @@ class CreateThumbnail implements ShouldQueue
         $guzzle = new Client();
 
         //TODO replace hardcoded values
-        $url = 'http://localhost/transcoderwebservice/callback';
+        $url = 'http://172.17.0.1/transcoderwebservice/callback';
 
         $api_token = DB::table('users')->where('id', $this->video->uid)->pluck('api_token')->first();
 
@@ -81,7 +81,8 @@ class CreateThumbnail implements ShouldQueue
                 'thumbnail' => [
                     'url' =>  route('getFile', $converted_name)
                 ]
-            ]
+            ],
+            'timeout' => 5
         ]);
 
     }

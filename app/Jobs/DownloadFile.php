@@ -42,7 +42,7 @@ class DownloadFile implements ShouldQueue
         $path = $payload['source']['mediakey'];
 
         $guzzle = new Client();
-        $response = $guzzle->get($payload['source']['url']);
+        $response = $guzzle->get($payload['source']['url'], ['timeout' => 5]);
         Storage::disk('uploaded')->put($path, $response->getBody());
 
         $this->download->update(['processed' => true]);

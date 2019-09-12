@@ -56,7 +56,7 @@ class ConvertVideo implements ShouldQueue
         }
 
 
-        $lowBitrateFormat = (new H264('aac', 'h264_vaapi'))
+        $lowBitrateFormat = (new H264('aac', 'libx264'))
             ->setKiloBitrate($target['vbr'])
             ->setAudioKiloBitrate($target['abr']);
 
@@ -81,7 +81,7 @@ class ConvertVideo implements ShouldQueue
 
         $video = $ffmpeg->open(storage_path('app/public/uploaded/' . $this->video->path));
 
-        $video->filters()->custom('scale_vaapi='.$this->dimension->getWidth() . ':' . $this->dimension->getHeight())->synchronize();
+        //$video->filters()->custom('scale_vaapi='.$this->dimension->getWidth() . ':' . $this->dimension->getHeight())->synchronize();
 
         $video->save($lowBitrateFormat, $converted_path);
 
@@ -107,7 +107,7 @@ class ConvertVideo implements ShouldQueue
         $guzzle = new Client();
 
         //TODO replace hardcoded values
-        $url = 'http://localhost/transcoderwebservice/callback';
+        $url = 'http://172.17.0.1/transcoderwebservice/callback';
 
         $api_token = DB::table('users')->where('id', $this->video->uid)->pluck('api_token')->first();
 

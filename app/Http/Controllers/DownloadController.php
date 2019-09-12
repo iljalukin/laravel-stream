@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Download;
-use Illuminate\Validation\Validator;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Validation\Rule;
 use App\Jobs\DownloadFile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,10 +28,10 @@ class DownloadController extends Controller
     public function store(Request $request)
     {
         Log::warning("warning");
-        $data = $request->json()->all();
+        $data = $request->all();
 
         $rules = [
-            'api_token'            => 'required|alpha_num|min:32|max:32',
+          //  'api_token'            => 'required|alpha_num|min:32|max:32',
             'source.url'        => 'required|url',
             'source.mediakey'   => ['required','alpha_num', 'min:32', 'max:32'],
             'source.created_at' => 'required',
@@ -39,13 +39,13 @@ class DownloadController extends Controller
             'target.*.size'     => ['required', 'regex:/^(\d+)x(\d+)/'],
             'target.*.vbr'      => 'required|integer',
             'target.*.abr'      => 'required|integer',
-            'target.*.format'   => ['required', Rule::in(['mp4','m4v'])]
+//            'target.*.format'   => ['required', Rule::in(['mp4','m4v'])]
 
         ];
 
         $validator = Validator::make($data, $rules);
 
-        if ($validator->passes())
+        if (!$validator->fails())
         {
             $request->offsetUnset('api_token');
             $download = Download::create([
