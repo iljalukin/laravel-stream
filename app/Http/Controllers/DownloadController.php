@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Download;
+use App\Models\Download;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Contracts\Validation\Rule;
 use App\Jobs\DownloadFile;
@@ -13,13 +13,6 @@ use Illuminate\Support\Facades\Auth;
 
 class DownloadController extends Controller
 {
-
-    public function index()
-    {
-        $downloads = Download::orderBy('created_at', 'DESC')->paginate(5);
-        return view('downloads', ['downloads' => $downloads]);
-    }
-
     /**
      * Handles form submission after uploader form submits
      * @param Request $request
@@ -50,6 +43,7 @@ class DownloadController extends Controller
             $request->offsetUnset('api_token');
             $download = Download::create([
                 'uid'       => Auth::guard('api')->user()->id,
+                'aid'       => '',
                 'payload'   => $request->json()->all()
             ]);
 
@@ -96,6 +90,7 @@ class DownloadController extends Controller
             $response = unserialize($jsonpayload->data->command);
             return response()->json($response,200);
         }
-        else return response()->json(array('message' => 'not found'),401);
+
+        return response()->json(array('message' => 'not found'), 401);
     }
 }

@@ -16,6 +16,7 @@ class CreateDownloadsTable extends Migration
         Schema::create('downloads', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('uid');
+            $table->integer('aid');
             $table->string('payload');
             $table->boolean('processed')->default(false);
             $table->timestamps();

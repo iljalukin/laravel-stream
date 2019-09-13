@@ -2,12 +2,15 @@
 
 namespace App\Jobs;
 
+use App\Models\Apikey;
+use Encore\Admin\Facades\Admin;
 use FFMpeg;
-use App\Video;
+use App\Models\Video;
 use App\Format\Video\H264;
 use Carbon\Carbon;
 use FFMpeg\Coordinate\Dimension;
 use Illuminate\Bus\Queueable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -107,9 +110,25 @@ class ConvertVideo implements ShouldQueue
         $guzzle = new Client();
 
         //TODO replace hardcoded values
-        $url = 'http://172.17.0.1/transcoderwebservice/callback';
+        //$url = 'http://172.17.0.1/transcoderwebservice/callback';
 
-        $api_token = DB::table('users')->where('id', $this->video->uid)->pluck('api_token')->first();
+
+        //$api_token = DB::table('users')->where('id', $this->video->uid)->pluck('api_token')->first();
+        try {
+            $api_token = Apikey::where('uid', $this->video->uid);
+        }
+        catch(\Exception $e)
+        {
+            dd($e);
+        }
+
+
+        try {
+            $url = Apikey::where('key', $api_token)->firstOrFail()->url . '/transcoderwebservice/callback';
+        }
+        catch (ModelNotFoundException $e) {
+            echo "No entry found for api key ";
+        }
 
         $response = $guzzle->post($url, [
             RequestOptions::JSON => [

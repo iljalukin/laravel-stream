@@ -90,20 +90,20 @@ class ApikeyController extends Controller
         $grid = new Grid(new Apikey);
 
         $grid->model()->where('uid', '=', Admin::user()->id);
-        $grid->id('ID')->sortable();
+        //$grid->id('ID')->sortable();
         $grid->name('Name')->editable();
         $grid->key('Key');
         $grid->url('URL');
-        $grid->created_at('Created at')->sortable();
-        $grid->updated_at('Updated at')->sortable();
+        //$grid->created_at('Created at')->sortable();
+        //$grid->updated_at('Updated at')->sortable();
 
         $grid->filter(function ($filter) {
 
             // Sets the range query for the created_at field
             $filter->contains('name');
             $filter->contains('key');
-            $filter->between('created_at', 'Created Time')->datetime();
-            $filter->between('updated_at', 'Updated Time')->datetime();
+            //$filter->between('created_at', 'Created Time')->datetime();
+            //$filter->between('updated_at', 'Updated Time')->datetime();
 
         });
 
@@ -120,12 +120,12 @@ class ApikeyController extends Controller
     {
         $show = new Show(Apikey::where('id', $id)->where('uid', Admin::user()->id)->firstOrFail());
 
-        $show->name('ID');
+        //$show->name('ID');
         $show->name('Name');
         $show->key('Key');
         $show->url('URL');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
+        //$show->created_at('Created at');
+        //$show->updated_at('Updated at');
 
         return $show;
     }
@@ -144,8 +144,8 @@ class ApikeyController extends Controller
         $form->text('name','Name');
         $form->text('key', 'Key');
         $form->text('url', 'URL');
-        $form->display('created_at','Created at');
-        $form->display('updated_at','Updated at');
+        //$form->display('created_at','Created at');
+        //$form->display('updated_at','Updated at');
 
         return $form;
     }

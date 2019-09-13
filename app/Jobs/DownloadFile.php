@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Jobs;
-use App\Download;
-use App\Video;
+use App\Models\Download;
+use App\Models\Video;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
