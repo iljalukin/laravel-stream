@@ -1,5 +1,6 @@
 <?php
 
+
 use Illuminate\Routing\Router;
 
 Admin::routes();
@@ -11,7 +12,18 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('admin.home');
-    $router->resource('apikeys', ApikeyController::class);
     $router->resource('profiles', ProfileController::class);
 
+    $router->get('/auth/login', '\\App\\Admin\\Controllers\\AuthController@getLogin');
+    $router->post('/auth/login', '\\App\\Admin\\Controllers\\AuthController@postLogin');
+    $router->get('auth/setting', '\\App\\Admin\\Controllers\\AuthController@getSetting');
+    $router->put('auth/setting', '\\App\\Admin\\Controllers\\AuthController@putSetting');
+
+
+    $router->get('auth/users/{id]', '\\App\\Admin\\Controllers\\UserController@detail');
+    $router->resources([
+        'users'                 => UserController::class,
+    ]);
+
 });
+

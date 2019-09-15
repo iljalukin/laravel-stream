@@ -44,15 +44,7 @@ return [
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
-        ],
-
-        // this will be like auth:token instead of auth:api
-        // name the guard anything you want
-        'token' => [
-            // access_token is what we defined inside Auth::extend
-            // you can name this anything BUT should match with
-            // Auth::extend('HERE');
-            'driver' => 'access_token',
+            'hash' => true,
         ],
     ],
 

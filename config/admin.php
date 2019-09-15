@@ -124,7 +124,7 @@ return [
         'providers' => [
             'admin' => [
                 'driver' => 'eloquent',
-                'model'  => Encore\Admin\Auth\Database\Administrator::class,
+                'model'  => App\Admin\Models\Administrator::class,
             ],
         ],
 
@@ -176,8 +176,8 @@ return [
         'connection' => '',
 
         // User tables and model.
-        'users_table' => 'admin_users',
-        'users_model' => Encore\Admin\Auth\Database\Administrator::class,
+        'users_table' => 'users',
+        'users_model' => App\Admin\Models\Administrator::class,
 
         // Role table and model.
         'roles_table' => 'admin_roles',

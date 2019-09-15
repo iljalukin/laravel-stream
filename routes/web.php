@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Auth::routes();
-
+/*
 Route::group(['middleware' => ['auth']], function(){
 
     Route::get('/', 'VideoController@index');
@@ -30,7 +30,7 @@ Route::group(['middleware' => ['auth']], function(){
     Route::get('/downloads', 'DownloadController@index');
 
 });
-
+*/
 Route::group(['prefix' => 'api', 'middleware' => ['auth:api']], function(){
     Route::post('/download', 'DownloadController@store')->name('download');
     Route::get('/file/{filename}', 'VideoController@getFile')->name('getFile');
